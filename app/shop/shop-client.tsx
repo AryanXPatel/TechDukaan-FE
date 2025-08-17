@@ -98,7 +98,7 @@ export default function ShopClient({
 
   // Watch for URL parameter changes and update filters accordingly
   useEffect(() => {
-    const currentParams = new URLSearchParams(searchParams?.toString() || "");
+    const currentParams = new URLSearchParams(searchParams?.toString() ?? "");
     const urlCategories = spToArray(currentParams.get("category"));
     const urlBrands = spToArray(currentParams.get("brands"));
     const urlRam = spToArray(currentParams.get("ram"));
@@ -124,7 +124,7 @@ export default function ShopClient({
   }, [searchParams]);
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams?.toString() || "");
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
     const brands = Object.entries(filters.brand)
       .filter(([, v]) => v)
       .map(([k]) => k);

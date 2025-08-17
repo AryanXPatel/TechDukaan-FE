@@ -1,33 +1,44 @@
-export type ConditionGrade = "Excellent" | "Good" | "Fair"
+export type ConditionGrade = "Excellent" | "Good" | "Fair";
 
 export type ProductImage = {
-  src: string
-  alt: string
-  blurDataURL?: string
-}
+  src: string;
+  alt: string;
+  blurDataURL?: string;
+};
 
 export type Product = {
-  id: string
-  unitId: string
-  title: string
-  brand: string
-  specs: string
-  price: string
-  numericPrice: number
-  mrp?: string
-  mrpNumeric?: number
-  discountPct?: number
-  image: string
-  images?: ProductImage[]
-  ram: "8GB" | "16GB" | "32GB"
-  storage: "256GB" | "512GB" | "1TB"
-  conditionGrade?: ConditionGrade
-  conditionNotes?: string
-  stock?: number
-  included?: string[]
-}
+  id: string;
+  unitId: string;
+  title: string;
+  brand: string;
+  specs: string;
+  price: string;
+  numericPrice: number;
+  mrp?: string;
+  mrpNumeric?: number;
+  discountPct?: number;
+  image: string;
+  images?: ProductImage[];
+  ram: "8GB" | "16GB" | "32GB";
+  storage: "256GB" | "512GB" | "1TB";
+  conditionGrade?: ConditionGrade;
+  conditionNotes?: string;
+  stock?: number;
+  included?: string[];
+  // Additional fields for compatibility with meilisearch results
+  collections?: Array<{ handle: string; title: string }>;
+  priceRange?: {
+    minVariantPrice: {
+      amount: number;
+      currencyCode: string;
+    };
+  };
+  vendor?: string;
+  avgRating?: number | null;
+  totalReviews?: number;
+};
 
-import { TINY_BLUR } from "./blur"
+import { TINY_BLUR } from "./blur";
 
 export const products: Product[] = [
   {
@@ -43,12 +54,36 @@ export const products: Product[] = [
     discountPct: 22,
     image: "/dell-latitude-5520.png",
     images: [
-      { src: "/products/p1/1.png", alt: "Dell Latitude 5520 front", blurDataURL: TINY_BLUR },
-      { src: "/products/p1/2.png", alt: "Dell Latitude 5520 keyboard and deck", blurDataURL: TINY_BLUR },
-      { src: "/products/p1/3.png", alt: "Dell Latitude 5520 left ports", blurDataURL: TINY_BLUR },
-      { src: "/products/p1/4.png", alt: "Dell Latitude 5520 right ports", blurDataURL: TINY_BLUR },
-      { src: "/products/p1/5.png", alt: "Dell Latitude 5520 lid close-up with minor mark", blurDataURL: TINY_BLUR },
-      { src: "/products/p1/6.png", alt: "Dell Latitude 5520 bottom ventilation", blurDataURL: TINY_BLUR },
+      {
+        src: "/products/p1/1.png",
+        alt: "Dell Latitude 5520 front",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p1/2.png",
+        alt: "Dell Latitude 5520 keyboard and deck",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p1/3.png",
+        alt: "Dell Latitude 5520 left ports",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p1/4.png",
+        alt: "Dell Latitude 5520 right ports",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p1/5.png",
+        alt: "Dell Latitude 5520 lid close-up with minor mark",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p1/6.png",
+        alt: "Dell Latitude 5520 bottom ventilation",
+        blurDataURL: TINY_BLUR,
+      },
     ],
     ram: "16GB",
     storage: "512GB",
@@ -70,11 +105,31 @@ export const products: Product[] = [
     discountPct: 27,
     image: "/placeholder-i4iz2.png",
     images: [
-      { src: "/products/p2/1.png", alt: "EliteBook 840 G5 front", blurDataURL: TINY_BLUR },
-      { src: "/products/p2/2.png", alt: "EliteBook 840 G5 keyboard deck", blurDataURL: TINY_BLUR },
-      { src: "/products/p2/3.png", alt: "EliteBook 840 G5 right ports", blurDataURL: TINY_BLUR },
-      { src: "/products/p2/4.png", alt: "EliteBook 840 G5 lid close-up mark", blurDataURL: TINY_BLUR },
-      { src: "/products/p2/5.png", alt: "EliteBook 840 G5 display close-up", blurDataURL: TINY_BLUR },
+      {
+        src: "/products/p2/1.png",
+        alt: "EliteBook 840 G5 front",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p2/2.png",
+        alt: "EliteBook 840 G5 keyboard deck",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p2/3.png",
+        alt: "EliteBook 840 G5 right ports",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p2/4.png",
+        alt: "EliteBook 840 G5 lid close-up mark",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p2/5.png",
+        alt: "EliteBook 840 G5 display close-up",
+        blurDataURL: TINY_BLUR,
+      },
     ],
     ram: "8GB",
     storage: "256GB",
@@ -96,11 +151,31 @@ export const products: Product[] = [
     discountPct: 28,
     image: "/lenovo-thinkpad-t490.png",
     images: [
-      { src: "/products/p3/1.png", alt: "ThinkPad T490 front", blurDataURL: TINY_BLUR },
-      { src: "/products/p3/2.png", alt: "ThinkPad T490 keyboard", blurDataURL: TINY_BLUR },
-      { src: "/products/p3/3.png", alt: "ThinkPad T490 ports left", blurDataURL: TINY_BLUR },
-      { src: "/products/p3/4.png", alt: "ThinkPad T490 hinge and lid close-up", blurDataURL: TINY_BLUR },
-      { src: "/products/p3/5.png", alt: "ThinkPad T490 bottom panel", blurDataURL: TINY_BLUR },
+      {
+        src: "/products/p3/1.png",
+        alt: "ThinkPad T490 front",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p3/2.png",
+        alt: "ThinkPad T490 keyboard",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p3/3.png",
+        alt: "ThinkPad T490 ports left",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p3/4.png",
+        alt: "ThinkPad T490 hinge and lid close-up",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p3/5.png",
+        alt: "ThinkPad T490 bottom panel",
+        blurDataURL: TINY_BLUR,
+      },
     ],
     ram: "8GB",
     storage: "256GB",
@@ -122,11 +197,31 @@ export const products: Product[] = [
     discountPct: 25,
     image: "/dell-latitude-5420.png",
     images: [
-      { src: "/products/p4/1.png", alt: "Latitude 5420 front", blurDataURL: TINY_BLUR },
-      { src: "/products/p4/2.png", alt: "Latitude 5420 deck", blurDataURL: TINY_BLUR },
-      { src: "/products/p4/3.png", alt: "Latitude 5420 ports", blurDataURL: TINY_BLUR },
-      { src: "/products/p4/4.png", alt: "Latitude 5420 lid", blurDataURL: TINY_BLUR },
-      { src: "/products/p4/5.png", alt: "Latitude 5420 bottom", blurDataURL: TINY_BLUR },
+      {
+        src: "/products/p4/1.png",
+        alt: "Latitude 5420 front",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p4/2.png",
+        alt: "Latitude 5420 deck",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p4/3.png",
+        alt: "Latitude 5420 ports",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p4/4.png",
+        alt: "Latitude 5420 lid",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p4/5.png",
+        alt: "Latitude 5420 bottom",
+        blurDataURL: TINY_BLUR,
+      },
     ],
     ram: "16GB",
     storage: "256GB",
@@ -148,11 +243,31 @@ export const products: Product[] = [
     discountPct: 22,
     image: "/hp-elitebook-830-g5.png",
     images: [
-      { src: "/products/p5/1.png", alt: "EliteBook 830 G5 front", blurDataURL: TINY_BLUR },
-      { src: "/products/p5/2.png", alt: "EliteBook 830 G5 keyboard", blurDataURL: TINY_BLUR },
-      { src: "/products/p5/3.png", alt: "EliteBook 830 G5 side", blurDataURL: TINY_BLUR },
-      { src: "/products/p5/4.png", alt: "EliteBook 830 G5 lid close-up", blurDataURL: TINY_BLUR },
-      { src: "/products/p5/5.png", alt: "EliteBook 830 G5 bottom", blurDataURL: TINY_BLUR },
+      {
+        src: "/products/p5/1.png",
+        alt: "EliteBook 830 G5 front",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p5/2.png",
+        alt: "EliteBook 830 G5 keyboard",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p5/3.png",
+        alt: "EliteBook 830 G5 side",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p5/4.png",
+        alt: "EliteBook 830 G5 lid close-up",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p5/5.png",
+        alt: "EliteBook 830 G5 bottom",
+        blurDataURL: TINY_BLUR,
+      },
     ],
     ram: "16GB",
     storage: "512GB",
@@ -174,11 +289,31 @@ export const products: Product[] = [
     discountPct: 19,
     image: "/lenovo-thinkpad-x1.png",
     images: [
-      { src: "/products/p6/1.png", alt: "ThinkPad X1 front", blurDataURL: TINY_BLUR },
-      { src: "/products/p6/2.png", alt: "ThinkPad X1 keyboard", blurDataURL: TINY_BLUR },
-      { src: "/products/p6/3.png", alt: "ThinkPad X1 ports", blurDataURL: TINY_BLUR },
-      { src: "/products/p6/4.png", alt: "ThinkPad X1 lid", blurDataURL: TINY_BLUR },
-      { src: "/products/p6/5.png", alt: "ThinkPad X1 bottom panel", blurDataURL: TINY_BLUR },
+      {
+        src: "/products/p6/1.png",
+        alt: "ThinkPad X1 front",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p6/2.png",
+        alt: "ThinkPad X1 keyboard",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p6/3.png",
+        alt: "ThinkPad X1 ports",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p6/4.png",
+        alt: "ThinkPad X1 lid",
+        blurDataURL: TINY_BLUR,
+      },
+      {
+        src: "/products/p6/5.png",
+        alt: "ThinkPad X1 bottom panel",
+        blurDataURL: TINY_BLUR,
+      },
     ],
     ram: "16GB",
     storage: "1TB",
@@ -187,4 +322,4 @@ export const products: Product[] = [
     stock: 2,
     included: ["65W charger", "6‑month warranty", "Initial setup service"],
   },
-]
+];

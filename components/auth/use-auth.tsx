@@ -1,7 +1,5 @@
 "use client";
 
-import type React from "react";
-
 import {
   createContext,
   useCallback,
@@ -24,6 +22,7 @@ export type User = {
 type AuthContextValue = {
   user: User | null;
   loading: boolean;
+  isLoading: boolean;
   signIn: (
     provider: "google" | "facebook" | "email",
     payload?: Partial<User>
@@ -78,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event: any, session: any) => {
       console.log("Auth state changed:", event, session?.user?.email);
 
       if (session?.user) {
@@ -123,7 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase]);
 
   const value = useMemo(
-    () => ({ user, loading, signIn, signOut }),
+    () => ({ user, loading, isLoading: loading, signIn, signOut }),
     [user, loading, signIn, signOut]
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

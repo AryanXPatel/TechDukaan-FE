@@ -219,7 +219,7 @@ export class UserDataService {
         console.error("Error fetching wishlist:", error);
         return [];
       }
-      return data?.map((item) => item.product_id) || [];
+      return data?.map((item: any) => item.product_id) || [];
     } catch (error) {
       console.error("Error fetching wishlist:", error);
       return [];
@@ -277,7 +277,7 @@ export class UserDataService {
         console.error("Error fetching compare list:", error);
         return [];
       }
-      return data?.map((item) => item.product_id) || [];
+      return data?.map((item: any) => item.product_id) || [];
     } catch (error) {
       console.error("Error fetching compare list:", error);
       return [];

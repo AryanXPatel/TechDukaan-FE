@@ -46,7 +46,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const loadCartData = async () => {
       if (!isHydrated || authLoading) return;
-      
+
       setLoading(true);
       try {
         if (user?.id) {
@@ -80,8 +80,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
               // Merge local cart with user's Supabase cart
               for (const localItem of localItems) {
                 await userDataService.addToCart(
-                  user.id, 
-                  localItem.id, 
+                  user.id,
+                  localItem.id,
                   localItem.qty,
                   localItem.title,
                   localItem.brand,
@@ -89,7 +89,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                   localItem.price
                 );
               }
-              
+
               // Reload cart from Supabase to get the merged data
               await loadSupabaseCart();
               localStorage.removeItem("tk_cart"); // Clear local storage after sync
@@ -117,7 +117,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const loadSupabaseCart = async () => {
     if (!user?.id) return;
-    
+
     try {
       const cartItems = await userDataService.getCart(user.id);
       // Convert UserCartItem to CartItem format using stored product details
@@ -143,8 +143,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (user?.id) {
         // Add to Supabase for authenticated users with product details
         const cartItem = await userDataService.addToCart(
-          user.id, 
-          p.id, 
+          user.id,
+          p.id,
           qty,
           p.title,
           p.brand,
@@ -181,8 +181,35 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         // Add to localStorage for guests
         setItems((prev) => {
           const idx = prev.findIndex((i) => i.id === p.id);
-          const newItems = idx >= 0 
-            ? prev.map((item, index) => 
+          const newItems =
+            idx >= 0
+              ? prev.map((item, index) =>
+                  index === idx ? { ...item, qty: item.qty + qty } : item
+                )
+              : [
+                  ...prev,
+                  {
+                    id: p.id,
+                    title: p.title,
+                    image: p.image,
+                    brand: p.brand,
+                    price: p.numericPrice,
+                    qty,
+                  },
+                ];
+
+          localStorage.setItem("tk_cart", JSON.stringify(newItems));
+          return newItems;
+        });
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      // Fallback to localStorage for any errors
+      setItems((prev) => {
+        const idx = prev.findIndex((i) => i.id === p.id);
+        const newItems =
+          idx >= 0
+            ? prev.map((item, index) =>
                 index === idx ? { ...item, qty: item.qty + qty } : item
               )
             : [
@@ -196,32 +223,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                   qty,
                 },
               ];
-          
-          localStorage.setItem("tk_cart", JSON.stringify(newItems));
-          return newItems;
-        });
-      }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      // Fallback to localStorage for any errors
-      setItems((prev) => {
-        const idx = prev.findIndex((i) => i.id === p.id);
-        const newItems = idx >= 0 
-          ? prev.map((item, index) => 
-              index === idx ? { ...item, qty: item.qty + qty } : item
-            )
-          : [
-              ...prev,
-              {
-                id: p.id,
-                title: p.title,
-                image: p.image,
-                brand: p.brand,
-                price: p.numericPrice,
-                qty,
-              },
-            ];
-        
+
         localStorage.setItem("tk_cart", JSON.stringify(newItems));
         return newItems;
       });
@@ -260,7 +262,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const setQty: CartContextValue["setQty"] = async (id, qty) => {
     const newQty = Math.max(1, qty);
-    
+
     try {
       if (user?.id) {
         // Update in Supabase for authenticated users

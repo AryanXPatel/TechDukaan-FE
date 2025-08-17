@@ -36,6 +36,7 @@ import { useCart } from "@/components/cart/cart-context";
 import { useWishlist } from "@/components/wishlist/wishlist-context";
 import { useToast } from "@/hooks/use-toast";
 import { searchProducts } from "@/lib/meilisearch/search";
+import { Product } from "@/lib/products";
 
 const brands = [
   "Dell",
@@ -62,21 +63,6 @@ const processors = [
 ];
 const screens = ["11", "12", "13", "14", "15", "16", "17"];
 const conditions = ["Excellent", "Good", "Fair"];
-
-type Product = {
-  id: string;
-  title: string;
-  price: string;
-  brand: string;
-  ram?: string;
-  storage?: string;
-  processor?: string;
-  screen?: string;
-  condition?: string;
-  image?: string;
-  images?: Array<{ src: string; alt?: string }>;
-  specs?: string;
-};
 
 type SearchFilters = {
   q: string;

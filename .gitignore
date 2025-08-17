@@ -37,3 +37,16 @@ Thumbs.db
 
 # Optional: coverage reports
 coverage/
+
+# Windows Security Files
+*.Zone.Identifier
+
+# Development Files
+CLAUDE.md
+FILES
+test-*.js
+debug-*.js
+
+# Development Artifacts
+*.tmp
+*.temp

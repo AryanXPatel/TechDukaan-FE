@@ -30,7 +30,7 @@ async function debugProductsIndex() {
       const directDoc = await index.getDocument(testId);
       console.log("✅ Found via getDocument:", directDoc.title);
     } catch (error) {
-      console.log("❌ getDocument failed:", error.message);
+      console.log("❌ getDocument failed:", (error as Error).message);
     }
 
     try {
@@ -45,7 +45,7 @@ async function debugProductsIndex() {
           : "Not found"
       );
     } catch (error) {
-      console.log("❌ Search filter failed:", error.message);
+      console.log("❌ Search filter failed:", (error as Error).message);
     }
 
     // Try searching by title

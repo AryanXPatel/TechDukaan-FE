@@ -1,7 +1,7 @@
 import type React from "react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import AuthGuard from "@/components/auth/auth-guard";
+import { AuthGuard } from "@/components/auth/auth-guard";
 
 export default function AccountLayout({
   children,

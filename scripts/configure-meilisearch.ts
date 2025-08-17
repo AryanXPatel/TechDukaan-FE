@@ -14,7 +14,9 @@ async function configureProductsIndex() {
     console.log("Current filterable attributes:", currentFilterable);
 
     // Add 'id' to filterable attributes
-    const newFilterableAttributes = [...new Set([...currentFilterable, "id"])];
+    const newFilterableAttributes = [
+      ...new Set([...Array.from(currentFilterable), "id"]),
+    ];
 
     console.log("Setting filterable attributes to:", newFilterableAttributes);
 

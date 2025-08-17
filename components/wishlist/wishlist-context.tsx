@@ -54,7 +54,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     if (!hasInitialized) {
       const localItems = getLocalWishlist();
       setItems(localItems);
-      setProductIds(localItems.map(item => item.id));
+      setProductIds(localItems.map((item) => item.id));
       setHasInitialized(true);
       setLoading(false);
     }
@@ -71,37 +71,37 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       // User signed out - keep only localStorage data
       const localItems = getLocalWishlist();
       setItems(localItems);
-      setProductIds(localItems.map(item => item.id));
+      setProductIds(localItems.map((item) => item.id));
       setLoading(false);
     }
   }, [user?.id, hasInitialized]);
 
   async function syncWithSupabase() {
     if (!user?.id) return;
-    
+
     setLoading(true);
     try {
       // Get current Supabase wishlist
       const supabaseIds = await userDataService.getWishlist(user.id);
-      
+
       // Get current localStorage wishlist
       const localItems = getLocalWishlist();
-      const localIds = localItems.map(item => item.id);
-      
+      const localIds = localItems.map((item) => item.id);
+
       // Merge: items that exist in either localStorage or Supabase
       const allIds = [...new Set([...supabaseIds, ...localIds])];
-      
+
       // Sync any local items not in Supabase to Supabase
       for (const localItem of localItems) {
         if (!supabaseIds.includes(localItem.id)) {
           await userDataService.addToWishlist(user.id, localItem.id);
         }
       }
-      
+
       // Build final items list (prioritize localStorage data for item details)
       const finalItems: WishItem[] = [];
       for (const id of allIds) {
-        const localItem = localItems.find(item => item.id === id);
+        const localItem = localItems.find((item) => item.id === id);
         if (localItem) {
           finalItems.push(localItem);
         } else {
@@ -112,23 +112,22 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
             title: `Product ${id}`,
             brand: "Unknown",
             image: "/placeholder.svg",
-            numericPrice: 0
+            numericPrice: 0,
           });
         }
       }
-      
+
       setItems(finalItems);
       setProductIds(allIds);
-      
+
       // Update localStorage to match final state
       saveLocalWishlist(finalItems);
-      
     } catch (error) {
       console.error("Error syncing wishlist with Supabase:", error);
       // Fallback to localStorage on error
       const localItems = getLocalWishlist();
       setItems(localItems);
-      setProductIds(localItems.map(item => item.id));
+      setProductIds(localItems.map((item) => item.id));
     } finally {
       setLoading(false);
     }
@@ -144,11 +143,11 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     };
 
     // Always update localStorage
-    const updatedItems = items.find(i => i.id === p.id) 
-      ? items 
+    const updatedItems = items.find((i) => i.id === p.id)
+      ? items
       : [...items, newItem];
-    const updatedIds = updatedItems.map(item => item.id);
-    
+    const updatedIds = updatedItems.map((item) => item.id);
+
     setItems(updatedItems);
     setProductIds(updatedIds);
     saveLocalWishlist(updatedItems);
@@ -166,9 +165,9 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
   const remove: WishCtx["remove"] = async (id) => {
     // Always update localStorage
-    const updatedItems = items.filter(i => i.id !== id);
-    const updatedIds = updatedItems.map(item => item.id);
-    
+    const updatedItems = items.filter((i) => i.id !== id);
+    const updatedIds = updatedItems.map((item) => item.id);
+
     setItems(updatedItems);
     setProductIds(updatedIds);
     saveLocalWishlist(updatedItems);
