@@ -32,7 +32,7 @@ type CartContextValue = {
 const CartContext = createContext<CartContextValue | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -42,126 +42,283 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsHydrated(true);
   }, []);
 
-  // Load cart when user changes
+  // Load cart data on mount and user change
   useEffect(() => {
-    if (user?.id && isHydrated) {
-      loadCart();
-    } else if (!user?.id && isHydrated) {
-      // Clear cart when user logs out
+    const loadCartData = async () => {
+      if (!isHydrated || authLoading) return;
+      
+      setLoading(true);
+      try {
+        if (user?.id) {
+          // Load from Supabase for authenticated users
+          await loadSupabaseCart();
+        } else {
+          // Load from localStorage for guests
+          loadLocalStorageCart();
+        }
+      } catch (error) {
+        console.error("Error loading cart:", error);
+        // Fallback to localStorage if Supabase fails
+        loadLocalStorageCart();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCartData();
+  }, [user?.id, isHydrated, authLoading]);
+
+  // Sync localStorage cart with Supabase when user signs in
+  useEffect(() => {
+    const syncCartOnSignIn = async () => {
+      if (user?.id && isHydrated && !authLoading) {
+        const localCart = localStorage.getItem("tk_cart");
+        if (localCart) {
+          try {
+            const localItems: CartItem[] = JSON.parse(localCart);
+            if (localItems.length > 0) {
+              // Merge local cart with user's Supabase cart
+              for (const localItem of localItems) {
+                await userDataService.addToCart(
+                  user.id, 
+                  localItem.id, 
+                  localItem.qty,
+                  localItem.title,
+                  localItem.brand,
+                  localItem.image,
+                  localItem.price
+                );
+              }
+              
+              // Reload cart from Supabase to get the merged data
+              await loadSupabaseCart();
+              localStorage.removeItem("tk_cart"); // Clear local storage after sync
+            }
+          } catch (error) {
+            console.error("Error syncing cart on sign in:", error);
+          }
+        }
+      }
+    };
+
+    syncCartOnSignIn();
+  }, [user?.id, isHydrated, authLoading]);
+
+  const loadLocalStorageCart = () => {
+    try {
+      const localCart = localStorage.getItem("tk_cart");
+      const cartItems = localCart ? JSON.parse(localCart) : [];
+      setItems(cartItems);
+    } catch (error) {
+      console.error("Error loading cart from localStorage:", error);
       setItems([]);
     }
-  }, [user?.id, isHydrated]);
+  };
 
-  async function loadCart() {
+  const loadSupabaseCart = async () => {
     if (!user?.id) return;
-    setLoading(true);
+    
     try {
       const cartItems = await userDataService.getCart(user.id);
-      // Convert UserCartItem to CartItem format
-      // Note: We need product data to get title, image, brand, price
-      // For now, we'll store basic info and fetch product details as needed
+      // Convert UserCartItem to CartItem format using stored product details
       const convertedItems: CartItem[] = cartItems.map((item) => ({
         id: item.product_id,
-        title: `Product ${item.product_id}`, // TODO: Get actual product data
-        image: "/placeholder.jpg", // TODO: Get actual product data
-        price: 0, // TODO: Get actual product data
-        brand: "Unknown", // TODO: Get actual product data
+        title: item.product_title,
+        image: item.product_image,
+        price: item.product_price,
+        brand: item.product_brand,
         qty: item.quantity,
         cartItemId: item.id,
       }));
       setItems(convertedItems);
     } catch (error) {
-      console.error("Error loading cart:", error);
-    } finally {
-      setLoading(false);
+      console.error("Error loading cart from Supabase:", error);
+      // Fallback to localStorage
+      loadLocalStorageCart();
     }
-  }
+  };
 
   const add: CartContextValue["add"] = async (p, qty = 1) => {
-    if (!user?.id) return;
-
     try {
-      const cartItem = await userDataService.addToCart(user.id, p.id, qty);
-      if (cartItem) {
+      if (user?.id) {
+        // Add to Supabase for authenticated users with product details
+        const cartItem = await userDataService.addToCart(
+          user.id, 
+          p.id, 
+          qty,
+          p.title,
+          p.brand,
+          p.image,
+          p.numericPrice
+        );
+        if (cartItem) {
+          setItems((prev) => {
+            const idx = prev.findIndex((i) => i.id === p.id);
+            if (idx >= 0) {
+              const copy = [...prev];
+              copy[idx] = {
+                ...copy[idx],
+                qty: cartItem.quantity,
+                cartItemId: cartItem.id,
+              };
+              return copy;
+            }
+            return [
+              ...prev,
+              {
+                id: p.id,
+                title: p.title,
+                image: p.image,
+                brand: p.brand,
+                price: p.numericPrice,
+                qty: cartItem.quantity,
+                cartItemId: cartItem.id,
+              },
+            ];
+          });
+        }
+      } else {
+        // Add to localStorage for guests
         setItems((prev) => {
           const idx = prev.findIndex((i) => i.id === p.id);
-          if (idx >= 0) {
-            const copy = [...prev];
-            copy[idx] = {
-              ...copy[idx],
-              qty: cartItem.quantity,
-              cartItemId: cartItem.id,
-            };
-            return copy;
-          }
-          return [
-            ...prev,
-            {
-              id: p.id,
-              title: p.title,
-              image: p.image,
-              brand: p.brand,
-              price: p.numericPrice,
-              qty: cartItem.quantity,
-              cartItemId: cartItem.id,
-            },
-          ];
+          const newItems = idx >= 0 
+            ? prev.map((item, index) => 
+                index === idx ? { ...item, qty: item.qty + qty } : item
+              )
+            : [
+                ...prev,
+                {
+                  id: p.id,
+                  title: p.title,
+                  image: p.image,
+                  brand: p.brand,
+                  price: p.numericPrice,
+                  qty,
+                },
+              ];
+          
+          localStorage.setItem("tk_cart", JSON.stringify(newItems));
+          return newItems;
         });
       }
     } catch (error) {
       console.error("Error adding to cart:", error);
+      // Fallback to localStorage for any errors
+      setItems((prev) => {
+        const idx = prev.findIndex((i) => i.id === p.id);
+        const newItems = idx >= 0 
+          ? prev.map((item, index) => 
+              index === idx ? { ...item, qty: item.qty + qty } : item
+            )
+          : [
+              ...prev,
+              {
+                id: p.id,
+                title: p.title,
+                image: p.image,
+                brand: p.brand,
+                price: p.numericPrice,
+                qty,
+              },
+            ];
+        
+        localStorage.setItem("tk_cart", JSON.stringify(newItems));
+        return newItems;
+      });
     }
   };
 
   const remove: CartContextValue["remove"] = async (id) => {
-    if (!user?.id) return;
-
-    const item = items.find((i) => i.id === id);
-    if (!item?.cartItemId) return;
-
     try {
-      const success = await userDataService.removeFromCart(item.cartItemId);
-      if (success) {
-        setItems((prev) => prev.filter((i) => i.id !== id));
+      if (user?.id) {
+        // Remove from Supabase for authenticated users
+        const item = items.find((i) => i.id === id);
+        if (item?.cartItemId) {
+          const success = await userDataService.removeFromCart(item.cartItemId);
+          if (success) {
+            setItems((prev) => prev.filter((i) => i.id !== id));
+          }
+        }
+      } else {
+        // Remove from localStorage for guests
+        setItems((prev) => {
+          const newItems = prev.filter((i) => i.id !== id);
+          localStorage.setItem("tk_cart", JSON.stringify(newItems));
+          return newItems;
+        });
       }
     } catch (error) {
       console.error("Error removing from cart:", error);
+      // Fallback to localStorage
+      setItems((prev) => {
+        const newItems = prev.filter((i) => i.id !== id);
+        localStorage.setItem("tk_cart", JSON.stringify(newItems));
+        return newItems;
+      });
     }
   };
 
   const setQty: CartContextValue["setQty"] = async (id, qty) => {
-    if (!user?.id) return;
-
-    const item = items.find((i) => i.id === id);
-    if (!item?.cartItemId) return;
-
+    const newQty = Math.max(1, qty);
+    
     try {
-      const updatedItem = await userDataService.updateCartQuantity(
-        item.cartItemId,
-        Math.max(1, qty)
-      );
-      if (updatedItem) {
-        setItems((prev) =>
-          prev.map((i) =>
-            i.id === id ? { ...i, qty: updatedItem.quantity } : i
-          )
-        );
+      if (user?.id) {
+        // Update in Supabase for authenticated users
+        const item = items.find((i) => i.id === id);
+        if (item?.cartItemId) {
+          const updatedItem = await userDataService.updateCartQuantity(
+            item.cartItemId,
+            newQty
+          );
+          if (updatedItem) {
+            setItems((prev) =>
+              prev.map((i) =>
+                i.id === id ? { ...i, qty: updatedItem.quantity } : i
+              )
+            );
+          }
+        }
+      } else {
+        // Update in localStorage for guests
+        setItems((prev) => {
+          const newItems = prev.map((i) =>
+            i.id === id ? { ...i, qty: newQty } : i
+          );
+          localStorage.setItem("tk_cart", JSON.stringify(newItems));
+          return newItems;
+        });
       }
     } catch (error) {
       console.error("Error updating cart quantity:", error);
+      // Fallback to localStorage
+      setItems((prev) => {
+        const newItems = prev.map((i) =>
+          i.id === id ? { ...i, qty: newQty } : i
+        );
+        localStorage.setItem("tk_cart", JSON.stringify(newItems));
+        return newItems;
+      });
     }
   };
 
   const clear = async () => {
-    if (!user?.id) return;
-
     try {
-      const success = await userDataService.clearCart(user.id);
-      if (success) {
+      if (user?.id) {
+        // Clear from Supabase for authenticated users
+        const success = await userDataService.clearCart(user.id);
+        if (success) {
+          setItems([]);
+        }
+      } else {
+        // Clear from localStorage for guests
+        localStorage.removeItem("tk_cart");
         setItems([]);
       }
     } catch (error) {
       console.error("Error clearing cart:", error);
+      // Fallback to localStorage clear
+      localStorage.removeItem("tk_cart");
+      setItems([]);
     }
   };
 

@@ -45,6 +45,11 @@ export type UserCartItem = {
   user_id: string;
   product_id: string;
   quantity: number;
+  // Store product details for easy retrieval
+  product_title: string;
+  product_brand: string;
+  product_image: string;
+  product_price: number;
   created_at?: string;
   updated_at?: string;
 };
@@ -355,7 +360,11 @@ export class UserDataService {
   async addToCart(
     userId: string,
     productId: string,
-    quantity: number = 1
+    quantity: number = 1,
+    productTitle?: string,
+    productBrand?: string,
+    productImage?: string,
+    productPrice?: number
   ): Promise<UserCartItem | null> {
     try {
       // Check if item already exists in cart
@@ -384,10 +393,20 @@ export class UserDataService {
         }
         return data;
       } else {
-        // Insert new item
+        // Insert new item with product details
+        const cartItem = {
+          user_id: userId,
+          product_id: productId,
+          quantity,
+          product_title: productTitle || `Product ${productId}`,
+          product_brand: productBrand || "Unknown",
+          product_image: productImage || "/placeholder.jpg",
+          product_price: productPrice || 0,
+        };
+
         const { data, error } = await this.supabase
           .from("user_cart")
-          .insert({ user_id: userId, product_id: productId, quantity })
+          .insert(cartItem)
           .select()
           .single();
 

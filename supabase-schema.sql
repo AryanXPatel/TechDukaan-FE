@@ -49,6 +49,10 @@ CREATE TABLE IF NOT EXISTS user_cart (
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   product_id TEXT NOT NULL,
   quantity INTEGER NOT NULL DEFAULT 1 CHECK (quantity > 0),
+  product_title TEXT NOT NULL DEFAULT '',
+  product_brand TEXT NOT NULL DEFAULT '',
+  product_image TEXT NOT NULL DEFAULT '',
+  product_price DECIMAL(10,2) NOT NULL DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   UNIQUE(user_id, product_id)
