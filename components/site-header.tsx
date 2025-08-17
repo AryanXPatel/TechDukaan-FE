@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Triangle, Heart, Search, Menu, X, User, LogIn } from "lucide-react";
+import { Heart, Search, Menu, X, User, LogIn } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Logo } from "@/components/ui/logo";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/components/auth/use-auth";
@@ -45,7 +46,7 @@ export function SiteHeader({ className }: { className?: string }) {
     >
       <div className="mx-auto flex h-14 items-center justify-between gap-4 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
         <Link href="/" className="inline-flex items-center gap-2 font-semibold">
-          <Triangle className="h-5 w-5" aria-hidden="true" />
+          <Logo width={32} height={32} aria-hidden="true" />
           <span>TechDukaan</span>
         </Link>
 

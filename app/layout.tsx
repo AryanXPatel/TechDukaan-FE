@@ -12,9 +12,9 @@ import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
-  generator: "v0.dev",
+  title: "TechDukaan - Quality Refurbished Laptops",
+  description: "Premium refurbished business laptops with warranty. Save up to 60% on enterprise-grade hardware.",
+  generator: "Next.js",
 }
 
 export default function RootLayout({

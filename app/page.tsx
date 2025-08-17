@@ -83,13 +83,16 @@ export default function Page() {
                 performance.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button asChild className="rounded-full bg-black px-5">
+                <Button
+                  asChild
+                  className="rounded-full bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 px-5"
+                >
                   <Link href="/shop">Shop Business Laptops</Link>
                 </Button>
                 <Button
                   asChild
                   variant="outline"
-                  className="rounded-full bg-transparent"
+                  className="rounded-full bg-transparent border-neutral-300 hover:bg-neutral-100 dark:border-neutral-600 dark:hover:bg-neutral-800"
                 >
                   <Link href="/shop">Browse All Categories</Link>
                 </Button>
@@ -321,7 +324,10 @@ export default function Page() {
                 className="bg-white dark:bg-background"
                 aria-describedby="newsletter-help"
               />
-              <Button type="submit" className="rounded-full bg-black px-6">
+              <Button
+                type="submit"
+                className="rounded-full bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 px-6"
+              >
                 Subscribe
               </Button>
             </form>
