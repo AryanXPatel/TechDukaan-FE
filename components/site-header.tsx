@@ -118,7 +118,7 @@ export function SiteHeader({ className }: { className?: string }) {
             className="rounded-full"
             aria-label="Wishlist"
           >
-            <Link href="/account/wishlist">
+            <Link href="/wishlist">
               <Heart className="h-5 w-5" aria-hidden="true" />
             </Link>
           </Button>
@@ -199,7 +199,7 @@ export function SiteHeader({ className }: { className?: string }) {
                           Orders
                         </Link>
                         <Link
-                          href="/account/wishlist"
+                          href="/wishlist"
                           className="block text-sm text-muted-foreground hover:text-foreground"
                           onClick={() => setMobileMenuOpen(false)}
                         >

@@ -27,90 +27,181 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   const [items, setItems] = useState<WishItem[]>([]);
   const [productIds, setProductIds] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
-  // Load wishlist when user changes
-  useEffect(() => {
-    if (user?.id) {
-      loadWishlist();
-    } else {
-      // Clear wishlist when user logs out
-      setItems([]);
-      setProductIds([]);
+  // Helper functions for localStorage operations
+  const getLocalWishlist = (): WishItem[] => {
+    try {
+      const stored = localStorage.getItem("tk_wishlist");
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error("Error reading localStorage wishlist:", error);
+      return [];
     }
-  }, [user?.id]);
+  };
 
-  async function loadWishlist() {
+  const saveLocalWishlist = (wishItems: WishItem[]) => {
+    try {
+      localStorage.setItem("tk_wishlist", JSON.stringify(wishItems));
+    } catch (error) {
+      console.error("Error saving to localStorage:", error);
+    }
+  };
+
+  // Initialize wishlist from localStorage on first load
+  useEffect(() => {
+    if (!hasInitialized) {
+      const localItems = getLocalWishlist();
+      setItems(localItems);
+      setProductIds(localItems.map(item => item.id));
+      setHasInitialized(true);
+      setLoading(false);
+    }
+  }, [hasInitialized]);
+
+  // Handle user authentication changes
+  useEffect(() => {
+    if (!hasInitialized) return;
+
+    if (user?.id) {
+      // User signed in - sync with Supabase
+      syncWithSupabase();
+    } else {
+      // User signed out - keep only localStorage data
+      const localItems = getLocalWishlist();
+      setItems(localItems);
+      setProductIds(localItems.map(item => item.id));
+      setLoading(false);
+    }
+  }, [user?.id, hasInitialized]);
+
+  async function syncWithSupabase() {
     if (!user?.id) return;
+    
     setLoading(true);
     try {
-      const ids = await userDataService.getWishlist(user.id);
-      setProductIds(ids);
-
-      // For existing items, only keep those that are still in the wishlist
-      setItems((prev) => prev.filter((item) => ids.includes(item.id)));
+      // Get current Supabase wishlist
+      const supabaseIds = await userDataService.getWishlist(user.id);
+      
+      // Get current localStorage wishlist
+      const localItems = getLocalWishlist();
+      const localIds = localItems.map(item => item.id);
+      
+      // Merge: items that exist in either localStorage or Supabase
+      const allIds = [...new Set([...supabaseIds, ...localIds])];
+      
+      // Sync any local items not in Supabase to Supabase
+      for (const localItem of localItems) {
+        if (!supabaseIds.includes(localItem.id)) {
+          await userDataService.addToWishlist(user.id, localItem.id);
+        }
+      }
+      
+      // Build final items list (prioritize localStorage data for item details)
+      const finalItems: WishItem[] = [];
+      for (const id of allIds) {
+        const localItem = localItems.find(item => item.id === id);
+        if (localItem) {
+          finalItems.push(localItem);
+        } else {
+          // If only in Supabase but not localStorage, we need basic item data
+          // For now, add a placeholder - in real app, you'd fetch product details
+          finalItems.push({
+            id,
+            title: `Product ${id}`,
+            brand: "Unknown",
+            image: "/placeholder.svg",
+            numericPrice: 0
+          });
+        }
+      }
+      
+      setItems(finalItems);
+      setProductIds(allIds);
+      
+      // Update localStorage to match final state
+      saveLocalWishlist(finalItems);
+      
     } catch (error) {
-      console.error("Error loading wishlist:", error);
+      console.error("Error syncing wishlist with Supabase:", error);
+      // Fallback to localStorage on error
+      const localItems = getLocalWishlist();
+      setItems(localItems);
+      setProductIds(localItems.map(item => item.id));
     } finally {
       setLoading(false);
     }
   }
 
   const add: WishCtx["add"] = async (p) => {
-    if (!user?.id) return;
+    const newItem: WishItem = {
+      id: p.id,
+      title: p.title,
+      brand: p.brand,
+      image: p.image,
+      numericPrice: p.numericPrice,
+    };
 
-    try {
-      const success = await userDataService.addToWishlist(user.id, p.id);
-      if (success) {
-        setProductIds((prev) => (prev.includes(p.id) ? prev : [...prev, p.id]));
-        setItems((prev) =>
-          prev.find((i) => i.id === p.id)
-            ? prev
-            : [
-                ...prev,
-                {
-                  id: p.id,
-                  title: p.title,
-                  brand: p.brand,
-                  image: p.image,
-                  numericPrice: p.numericPrice,
-                },
-              ]
-        );
+    // Always update localStorage
+    const updatedItems = items.find(i => i.id === p.id) 
+      ? items 
+      : [...items, newItem];
+    const updatedIds = updatedItems.map(item => item.id);
+    
+    setItems(updatedItems);
+    setProductIds(updatedIds);
+    saveLocalWishlist(updatedItems);
+
+    // If user is authenticated, also sync to Supabase
+    if (user?.id) {
+      try {
+        await userDataService.addToWishlist(user.id, p.id);
+      } catch (error) {
+        console.error("Error adding to Supabase wishlist:", error);
+        // Item is still added to localStorage, so we don't revert the UI change
       }
-    } catch (error) {
-      console.error("Error adding to wishlist:", error);
     }
   };
 
   const remove: WishCtx["remove"] = async (id) => {
-    if (!user?.id) return;
+    // Always update localStorage
+    const updatedItems = items.filter(i => i.id !== id);
+    const updatedIds = updatedItems.map(item => item.id);
+    
+    setItems(updatedItems);
+    setProductIds(updatedIds);
+    saveLocalWishlist(updatedItems);
 
-    try {
-      const success = await userDataService.removeFromWishlist(user.id, id);
-      if (success) {
-        setProductIds((prev) => prev.filter((pid) => pid !== id));
-        setItems((prev) => prev.filter((i) => i.id !== id));
+    // If user is authenticated, also sync to Supabase
+    if (user?.id) {
+      try {
+        await userDataService.removeFromWishlist(user.id, id);
+      } catch (error) {
+        console.error("Error removing from Supabase wishlist:", error);
+        // Item is still removed from localStorage, so we don't revert the UI change
       }
-    } catch (error) {
-      console.error("Error removing from wishlist:", error);
     }
   };
 
   const has: WishCtx["has"] = (id) => productIds.includes(id);
 
   const clear = async () => {
-    if (!user?.id) return;
+    // Always clear localStorage
+    setItems([]);
+    setProductIds([]);
+    saveLocalWishlist([]);
 
-    try {
-      // Clear individual items since we don't have a bulk clear in user-data service
-      for (const id of productIds) {
-        await userDataService.removeFromWishlist(user.id, id);
+    // If user is authenticated, also clear Supabase
+    if (user?.id) {
+      try {
+        for (const id of productIds) {
+          await userDataService.removeFromWishlist(user.id, id);
+        }
+      } catch (error) {
+        console.error("Error clearing Supabase wishlist:", error);
+        // Items are still cleared from localStorage, so we don't revert the UI change
       }
-      setItems([]);
-      setProductIds([]);
-    } catch (error) {
-      console.error("Error clearing wishlist:", error);
     }
   };
 

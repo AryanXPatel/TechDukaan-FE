@@ -97,7 +97,7 @@ export function AccountMenu() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link href="/account/wishlist" className="cursor-pointer">
+          <Link href="/wishlist" className="cursor-pointer">
             <Heart className="mr-2 h-4 w-4" />
             Wishlist
           </Link>

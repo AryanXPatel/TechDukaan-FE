@@ -53,12 +53,6 @@ export default function AccountLayout({
                 </Link>
                 <Link
                   className="block rounded-md px-2 py-2 hover:bg-muted"
-                  href="/account/wishlist"
-                >
-                  Wishlist
-                </Link>
-                <Link
-                  className="block rounded-md px-2 py-2 hover:bg-muted"
                   href="/account/recommendations"
                 >
                   Recommendations
