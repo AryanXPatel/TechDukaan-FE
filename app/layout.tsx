@@ -1,26 +1,27 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-import "./globals.css"
-import { AppProviders } from "@/components/app-providers"
-import { Toaster } from "@/components/ui/toaster"
-import { FloatingWhatsApp } from "@/components/whatsapp/floating-whatsapp"
-import { FeatureProvidersWrapper } from "@/components/feature-providers-wrapper"
-import { CompareTrayRoot } from "@/components/compare/tray-root"
-import { SiteHeader } from "@/components/site-header"
-import { SiteFooter } from "@/components/site-footer"
+import type React from "react";
+import type { Metadata } from "next";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
+import "./globals.css";
+import { AppProviders } from "@/components/app-providers";
+import { Toaster } from "@/components/ui/toaster";
+import { FloatingWhatsApp } from "@/components/whatsapp/floating-whatsapp";
+import { FeatureProvidersWrapper } from "@/components/feature-providers-wrapper";
+import { CompareTrayRoot } from "@/components/compare/tray-root";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
 export const metadata: Metadata = {
   title: "TechDukaan - Quality Refurbished Laptops",
-  description: "Premium refurbished business laptops with warranty. Save up to 60% on enterprise-grade hardware.",
+  description:
+    "Premium refurbished business laptops with warranty. Save up to 60% on enterprise-grade hardware.",
   generator: "Next.js",
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en">
@@ -84,5 +85,5 @@ html {
         </AppProviders>
       </body>
     </html>
-  )
+  );
 }
