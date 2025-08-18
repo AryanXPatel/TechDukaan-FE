@@ -12,11 +12,7 @@ export function CompareToggle({ product }: { product: Product }) {
     <Button
       size="sm"
       variant={added ? "default" : "outline"}
-      className={`p-2 ${
-        added
-          ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
-          : "bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
-      }`}
+      className="p-2"
       onClick={(e) => {
         e.preventDefault();
         added ? remove(product.id) : add(product);

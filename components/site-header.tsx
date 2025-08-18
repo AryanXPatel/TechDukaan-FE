@@ -154,14 +154,14 @@ export function SiteHeader({ className }: { className?: string }) {
                 <Menu className="h-5 w-5" aria-hidden="true" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+            <SheetContent side="right">
               <SheetHeader>
                 <SheetTitle className="text-left">Menu</SheetTitle>
               </SheetHeader>
 
-              <div className="mt-6 flex flex-col space-y-6">
+              <div className="px-4 pb-4 space-y-6">
                 {/* Auth Section */}
-                <div className="border-b pb-6">
+                <div className="border-b border-border pb-6">
                   {loading ? (
                     <div className="space-y-3">
                       <div className="flex items-center gap-3">
@@ -170,7 +170,7 @@ export function SiteHeader({ className }: { className?: string }) {
                       </div>
                     </div>
                   ) : user ? (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       <div className="flex items-center gap-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
                           <User className="h-4 w-4" />
@@ -184,30 +184,30 @@ export function SiteHeader({ className }: { className?: string }) {
                           </span>
                         </div>
                       </div>
-                      <div className="space-y-2 pl-11">
+                      <div className="space-y-3 pl-3">
                         <Link
                           href="/account"
-                          className="block text-sm text-muted-foreground hover:text-foreground"
+                          className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           Profile
                         </Link>
                         <Link
                           href="/account/orders"
-                          className="block text-sm text-muted-foreground hover:text-foreground"
+                          className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           Orders
                         </Link>
                         <Link
                           href="/wishlist"
-                          className="block text-sm text-muted-foreground hover:text-foreground"
+                          className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           Wishlist
                         </Link>
                         <button
-                          className="block text-sm text-muted-foreground hover:text-foreground"
+                          className="block text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
                           onClick={async () => {
                             await signOut();
                             setMobileMenuOpen(false);
@@ -221,7 +221,7 @@ export function SiteHeader({ className }: { className?: string }) {
                     <div className="space-y-3">
                       <Button
                         asChild
-                        className="w-full"
+                        className="w-full h-12 text-base"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <Link href="/sign-in">
@@ -232,7 +232,7 @@ export function SiteHeader({ className }: { className?: string }) {
                       <Button
                         asChild
                         variant="outline"
-                        className="w-full"
+                        className="w-full h-12 text-base"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         <Link href="/sign-in">Sign Up</Link>
@@ -243,13 +243,13 @@ export function SiteHeader({ className }: { className?: string }) {
 
                 {/* Navigation Links */}
                 <nav className="space-y-4">
-                  <h3 className="font-medium">Categories</h3>
-                  <div className="space-y-3">
+                  <h3 className="font-semibold text-base px-3">Categories</h3>
+                  <div className="space-y-1">
                     {navigationLinks.map((link) => (
                       <Link
                         key={link.href}
                         href={link.href}
-                        className="block text-muted-foreground hover:text-foreground"
+                        className="block text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all px-3 py-3 rounded-md text-base"
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         {link.label}
@@ -259,26 +259,26 @@ export function SiteHeader({ className }: { className?: string }) {
                 </nav>
 
                 {/* Additional Links */}
-                <div className="space-y-4 border-t pt-6">
-                  <h3 className="font-medium">Support</h3>
-                  <div className="space-y-3">
+                <div className="space-y-4 border-t border-border pt-6">
+                  <h3 className="font-semibold text-base px-3">Support</h3>
+                  <div className="space-y-1">
                     <Link
                       href="/support"
-                      className="block text-muted-foreground hover:text-foreground"
+                      className="block text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all px-3 py-3 rounded-md text-base"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Help Center
                     </Link>
                     <Link
                       href="/support/contact"
-                      className="block text-muted-foreground hover:text-foreground"
+                      className="block text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all px-3 py-3 rounded-md text-base"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       Contact Us
                     </Link>
                     <Link
                       href="/about"
-                      className="block text-muted-foreground hover:text-foreground"
+                      className="block text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all px-3 py-3 rounded-md text-base"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       About Us

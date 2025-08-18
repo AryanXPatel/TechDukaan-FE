@@ -1,34 +1,57 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { ShoppingCart, Trash2 } from "lucide-react"
-import { useCart } from "./cart-context"
-import Link from "next/link"
-import { useState, useRef, useEffect } from "react"
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { ShoppingCart, Trash2 } from "lucide-react";
+import { useCart } from "./cart-context";
+import Link from "next/link";
+import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export function CartDrawer() {
-  const { items, total, setQty, remove } = useCart()
-  const [open, setOpen] = useState(false)
-  const headingRef = useRef<HTMLHeadingElement>(null)
+  const { items, total, setQty, remove } = useCart();
+  const [open, setOpen] = useState(false);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (open) {
-      const id = window.setTimeout(() => headingRef.current?.focus(), 50)
-      return () => window.clearTimeout(id)
+      const id = window.setTimeout(() => headingRef.current?.focus(), 50);
+      return () => window.clearTimeout(id);
     }
-  }, [open])
+  }, [open]);
+
+  // Close cart drawer when navigating to different pages
+  useEffect(() => {
+    if (open) {
+      setOpen(false);
+    }
+  }, [pathname]);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full">
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full hover:bg-muted"
+        >
           <ShoppingCart className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent className="flex w-[380px] flex-col p-0" aria-labelledby="cart-title">
+      <SheetContent
+        className="flex w-[380px] flex-col p-0"
+        aria-labelledby="cart-title"
+      >
         <SheetHeader className="p-6">
           <SheetTitle id="cart-title" ref={headingRef} tabIndex={-1}>
             Your cart
@@ -55,17 +78,27 @@ export function CartDrawer() {
                     <p className="truncate text-sm font-medium">{i.title}</p>
                     <p className="text-xs text-muted-foreground">{i.brand}</p>
                     <div className="mt-2 flex items-center gap-2">
-                      <Button size="sm" variant="outline" onClick={() => setQty(i.id, i.qty - 1)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setQty(i.id, i.qty - 1)}
+                      >
                         -
                       </Button>
                       <span className="w-7 text-center text-sm">{i.qty}</span>
-                      <Button size="sm" variant="outline" onClick={() => setQty(i.id, i.qty + 1)}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setQty(i.id, i.qty + 1)}
+                      >
                         +
                       </Button>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-medium">₹{(i.price * i.qty).toLocaleString()}</p>
+                    <p className="text-sm font-medium">
+                      ₹{(i.price * i.qty).toLocaleString()}
+                    </p>
                     <Button
                       size="icon"
                       variant="ghost"
@@ -89,10 +122,10 @@ export function CartDrawer() {
               <span className="font-medium">₹{total.toLocaleString()}</span>
             </div>
             <div className="flex gap-2">
-              <Button asChild variant="outline" className="flex-1 bg-transparent">
+              <Button asChild variant="outline" className="flex-1">
                 <Link href="/cart">View cart</Link>
               </Button>
-              <Button asChild className="flex-1 bg-black">
+              <Button asChild className="flex-1">
                 <Link href="/checkout">Checkout</Link>
               </Button>
             </div>
@@ -100,5 +133,5 @@ export function CartDrawer() {
         </SheetFooter>
       </SheetContent>
     </Sheet>
-  )
+  );
 }

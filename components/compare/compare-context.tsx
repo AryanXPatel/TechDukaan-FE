@@ -85,9 +85,15 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
           const newItems = [...items, product];
           setItems(newItems);
           setIds(newItems.map((p) => p.id));
+        } else {
+          console.error("Failed to add product to compare list");
         }
       } catch (error) {
-        console.error("Error adding to compare:", error);
+        console.error("Error adding to compare:", {
+          error: error instanceof Error ? error.message : "Unknown error",
+          productId: product.id,
+          userId: user.id,
+        });
       }
     } else {
       // Guest user - use localStorage

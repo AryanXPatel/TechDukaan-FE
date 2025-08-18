@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useCart } from "@/components/cart/cart-context"
-import { BulkDiscountBar } from "@/components/bulk/bulk-discount-bar"
-import { calcBulkDiscount } from "@/lib/bulk"
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useCart } from "@/components/cart/cart-context";
+import { BulkDiscountBar } from "@/components/bulk/bulk-discount-bar";
+import { calcBulkDiscount } from "@/lib/bulk";
 
 export default function CartPage() {
-  const { items, total, setQty, remove, clear, isHydrated } = useCart()
-  const has = items.length > 0
+  const { items, total, setQty, remove, clear, isHydrated } = useCart();
+  const has = items.length > 0;
   const { pct, amount } = calcBulkDiscount(
     total,
-    items.reduce((s, i) => s + i.qty, 0),
-  )
-  const grandTotal = Math.max(0, total - amount)
+    items.reduce((s, i) => s + i.qty, 0)
+  );
+  const grandTotal = Math.max(0, total - amount);
 
   // Show loading state during hydration
   if (!isHydrated) {
@@ -27,12 +27,14 @@ export default function CartPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-center py-8">
-              <div className="text-sm text-muted-foreground">Loading cart...</div>
+              <div className="text-sm text-muted-foreground">
+                Loading cart...
+              </div>
             </div>
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
@@ -47,15 +49,20 @@ export default function CartPage() {
             </Button>
           )}
         </CardHeader>
-        <CardContent className="grid gap-8 md:grid-cols-[1fr_320px]">
+        <CardContent className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <div>
             {items.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Your cart is empty.</p>
+              <p className="text-sm text-muted-foreground">
+                Your cart is empty.
+              </p>
             ) : (
               <ul className="space-y-6">
                 {items.map((i) => (
-                  <li key={i.id} className="flex items-center gap-4">
-                    <div className="h-24 w-28 overflow-hidden rounded-md border bg-neutral-50">
+                  <li
+                    key={i.id}
+                    className="flex items-start gap-4 sm:items-center"
+                  >
+                    <div className="h-24 w-24 sm:h-28 sm:w-32 overflow-hidden rounded-md border bg-neutral-50 flex-shrink-0">
                       <Image
                         src={i.image || "/placeholder.svg"}
                         alt={i.title}
@@ -65,21 +72,44 @@ export default function CartPage() {
                       />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{i.title}</p>
-                      <p className="text-xs text-muted-foreground">{i.brand}</p>
-                      <div className="mt-2 flex items-center gap-2">
-                        <Button size="sm" variant="outline" onClick={() => setQty(i.id, i.qty - 1)}>
+                      <p className="text-sm font-medium leading-5 sm:truncate">
+                        {i.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {i.brand}
+                      </p>
+                      <div className="mt-3 flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setQty(i.id, i.qty - 1)}
+                          className="h-8 w-8 p-0"
+                        >
                           -
                         </Button>
-                        <span className="w-7 text-center text-sm">{i.qty}</span>
-                        <Button size="sm" variant="outline" onClick={() => setQty(i.id, i.qty + 1)}>
+                        <span className="w-8 text-center text-sm font-medium">
+                          {i.qty}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setQty(i.id, i.qty + 1)}
+                          className="h-8 w-8 p-0"
+                        >
                           +
                         </Button>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-sm font-medium">₹{(i.price * i.qty).toLocaleString()}</div>
-                      <Button variant="ghost" size="sm" className="mt-2" onClick={() => remove(i.id)}>
+                    <div className="text-right flex-shrink-0">
+                      <div className="text-sm font-medium">
+                        ₹{(i.price * i.qty).toLocaleString()}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="mt-2 text-xs"
+                        onClick={() => remove(i.id)}
+                      >
                         Remove
                       </Button>
                     </div>
@@ -108,7 +138,11 @@ export default function CartPage() {
               <Button asChild className="w-full bg-black">
                 <Link href="/checkout">Proceed to checkout</Link>
               </Button>
-              <Button asChild variant="outline" className="w-full bg-transparent">
+              <Button
+                asChild
+                variant="outline"
+                className="w-full bg-transparent"
+              >
                 <Link href="/shop">Continue shopping</Link>
               </Button>
             </div>
@@ -116,5 +150,5 @@ export default function CartPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

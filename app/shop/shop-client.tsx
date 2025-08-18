@@ -253,11 +253,11 @@ export default function ShopClient({
                   <Filter className="h-4 w-4" /> Filters
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-[320px]">
+              <SheetContent side="left">
                 <SheetHeader>
                   <SheetTitle>Filters</SheetTitle>
                 </SheetHeader>
-                <div className="mt-6">
+                <div className="px-4 pb-4">
                   <FiltersPanel
                     filters={filters}
                     setFilters={setFilters}
@@ -581,18 +581,21 @@ function FiltersPanel({
 }) {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-3">
         <h3 className="text-sm font-medium">Filters</h3>
         <Button variant="ghost" size="sm" onClick={onClear}>
           Clear all
         </Button>
       </div>
 
-      <div>
+      <div className="space-y-4 px-3">
         <h4 className="text-sm font-medium">Category</h4>
-        <div className="mt-3 space-y-3">
+        <div className="space-y-3">
           {allCategories.map((c) => (
-            <label key={c} className="flex items-center gap-2 text-sm">
+            <label
+              key={c}
+              className="flex items-center gap-3 text-sm cursor-pointer hover:bg-muted/50 p-2 rounded-md transition-colors"
+            >
               <Checkbox
                 checked={!!filters.category[c]}
                 onCheckedChange={(v) =>
@@ -610,11 +613,14 @@ function FiltersPanel({
 
       <Separator />
 
-      <div>
+      <div className="space-y-4 px-3">
         <h4 className="text-sm font-medium">Brand</h4>
-        <div className="mt-3 space-y-3">
+        <div className="space-y-3">
           {allBrands.map((b) => (
-            <label key={b} className="flex items-center gap-2 text-sm">
+            <label
+              key={b}
+              className="flex items-center gap-3 text-sm cursor-pointer hover:bg-muted/50 p-2 rounded-md transition-colors"
+            >
               <Checkbox
                 checked={!!filters.brand[b]}
                 onCheckedChange={(v) =>
@@ -632,11 +638,14 @@ function FiltersPanel({
 
       <Separator />
 
-      <div>
+      <div className="space-y-4 px-3">
         <h4 className="text-sm font-medium">Memory (RAM)</h4>
-        <div className="mt-3 space-y-3">
+        <div className="space-y-3">
           {allRams.map((r) => (
-            <label key={r} className="flex items-center gap-2 text-sm">
+            <label
+              key={r}
+              className="flex items-center gap-3 text-sm cursor-pointer hover:bg-muted/50 p-2 rounded-md transition-colors"
+            >
               <Checkbox
                 checked={filters.ram?.includes(r)}
                 onCheckedChange={(v) => {
@@ -651,11 +660,14 @@ function FiltersPanel({
         </div>
       </div>
 
-      <div>
+      <div className="space-y-4 px-3">
         <h4 className="text-sm font-medium">Storage</h4>
-        <div className="mt-3 space-y-3">
+        <div className="space-y-3">
           {allStorage.map((s) => (
-            <label key={s} className="flex items-center gap-2 text-sm">
+            <label
+              key={s}
+              className="flex items-center gap-3 text-sm cursor-pointer hover:bg-muted/50 p-2 rounded-md transition-colors"
+            >
               <Checkbox
                 checked={filters.storage?.includes(s)}
                 onCheckedChange={(v) => {
@@ -672,11 +684,13 @@ function FiltersPanel({
 
       <Separator />
 
-      <div>
+      <div className="space-y-4 px-3">
         <h4 className="text-sm font-medium">Price range (₹)</h4>
-        <div className="mt-3 grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <Label htmlFor="min">Min</Label>
+            <Label htmlFor="min" className="text-xs">
+              Min
+            </Label>
             <Input
               id="min"
               inputMode="numeric"
@@ -688,10 +702,13 @@ function FiltersPanel({
                   minPrice: e.target.value ? Number(e.target.value) : undefined,
                 })
               }
+              className="mt-1"
             />
           </div>
           <div>
-            <Label htmlFor="max">Max</Label>
+            <Label htmlFor="max" className="text-xs">
+              Max
+            </Label>
             <Input
               id="max"
               inputMode="numeric"
@@ -703,6 +720,7 @@ function FiltersPanel({
                   maxPrice: e.target.value ? Number(e.target.value) : undefined,
                 })
               }
+              className="mt-1"
             />
           </div>
         </div>

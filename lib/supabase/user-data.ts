@@ -291,12 +291,21 @@ export class UserDataService {
         .insert({ user_id: userId, product_id: productId });
 
       if (error) {
-        console.error("Error adding to compare:", error);
+        console.error("Error adding to compare:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        });
         return false;
       }
       return true;
     } catch (error) {
-      console.error("Error adding to compare:", error);
+      console.error("Error adding to compare:", {
+        error: error instanceof Error ? error.message : "Unknown error",
+        userId,
+        productId,
+      });
       return false;
     }
   }
