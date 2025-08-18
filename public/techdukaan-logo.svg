@@ -1,11 +1,1 @@
-<svg viewBox="0 0 200 40" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#3B82F6"/>
-      <stop offset="100%" style="stop-color:#1E40AF"/>
-    </linearGradient>
-  </defs>
-  <text x="5" y="28" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="url(#logoGradient)">
-    TechDukaan
-  </text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="8 13 26 26" fill="none" aria-label="TechDukaan Logo"><path d="M 10 15 L 10 35 L 15 35 L 15 20 L 25 20 L 25 15 Z" fill="#1F2937"></path><path d="M 20 25 L 20 35 L 30 35 L 30 30 L 25 30 L 25 25 Z" fill="#2563EB"></path><circle cx="27.5" cy="17.5" r="2.5" fill="#00DC82"></circle></svg>

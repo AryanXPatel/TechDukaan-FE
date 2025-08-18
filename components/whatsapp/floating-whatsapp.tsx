@@ -1,11 +1,12 @@
-"use client"
+"use client";
 
-import { MessageCircle } from "lucide-react"
-import { buildWaLink, WHATSAPP_NUMBER } from "@/lib/whatsapp"
+import { MessageCircle } from "lucide-react";
+import { buildWaLink, WHATSAPP_NUMBER } from "@/lib/whatsapp";
 
 export function FloatingWhatsApp() {
-  const message = "Hello TechDukaan! I need help with my order/status. Please assist."
-  const href = buildWaLink(message)
+  const message =
+    "Hello TechDukaan! I need help with my order/status. Please assist.";
+  const href = buildWaLink(message);
   return (
     <div className="fixed bottom-4 right-4 z-50">
       <a
@@ -17,12 +18,6 @@ export function FloatingWhatsApp() {
       >
         <MessageCircle className="h-6 w-6" />
       </a>
-      <div className="mt-2 rounded-md bg-background/90 px-3 py-1 text-xs text-foreground shadow-sm">
-        Or call:{" "}
-        <a href={`tel:${WHATSAPP_NUMBER}`} className="underline">
-          {WHATSAPP_NUMBER}
-        </a>
-      </div>
     </div>
-  )
+  );
 }

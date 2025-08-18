@@ -11,9 +11,11 @@ export function CompareToggle({ product }: { product: Product }) {
   return (
     <Button
       size="sm"
-      variant={added ? "secondary" : "outline"}
+      variant={added ? "default" : "outline"}
       className={`p-2 ${
-        added ? "bg-blue-100 border-blue-300 text-blue-700" : "bg-transparent"
+        added
+          ? "bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+          : "bg-white hover:bg-gray-50 border-gray-300 text-gray-700"
       }`}
       onClick={(e) => {
         e.preventDefault();
