@@ -27,15 +27,13 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
   const [saved, setSaved] = useState<{ name: string; ids: string[] }[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Load compare list when user changes
+  // Load compare list when user changes or on initial load
   useEffect(() => {
     if (user?.id) {
       loadCompareList();
     } else {
-      // Clear compare when user logs out
-      setIds([]);
-      setItems([]);
-      setSaved([]);
+      // Load from localStorage for guest users
+      loadGuestCompareList();
     }
   }, [user?.id]);
 
@@ -58,49 +56,89 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  function loadGuestCompareList() {
+    try {
+      const guestCompareIds = JSON.parse(
+        localStorage.getItem("tk_guest_compare") || "[]"
+      );
+      setIds(guestCompareIds);
+
+      // Load product details for the compare items
+      const compareItems = guestCompareIds
+        .map((id: string) => products.find((p) => p.id === id))
+        .filter(Boolean) as Product[];
+      setItems(compareItems);
+    } catch (error) {
+      console.error("Error loading guest compare list:", error);
+    }
+  }
+
   const add = async (product: Product) => {
-    if (!user?.id) return;
     if (items.find((p) => p.id === product.id)) return;
     if (items.length >= 4) return;
 
-    try {
-      const success = await userDataService.addToCompare(user.id, product.id);
-      if (success) {
-        const newItems = [...items, product];
-        setItems(newItems);
-        setIds(newItems.map((p) => p.id));
+    if (user?.id) {
+      // Authenticated user - use backend
+      try {
+        const success = await userDataService.addToCompare(user.id, product.id);
+        if (success) {
+          const newItems = [...items, product];
+          setItems(newItems);
+          setIds(newItems.map((p) => p.id));
+        }
+      } catch (error) {
+        console.error("Error adding to compare:", error);
       }
-    } catch (error) {
-      console.error("Error adding to compare:", error);
+    } else {
+      // Guest user - use localStorage
+      const newItems = [...items, product];
+      const newIds = newItems.map((p) => p.id);
+      setItems(newItems);
+      setIds(newIds);
+      localStorage.setItem("tk_guest_compare", JSON.stringify(newIds));
     }
   };
 
   const remove = async (id: string) => {
-    if (!user?.id) return;
-
-    try {
-      const success = await userDataService.removeFromCompare(user.id, id);
-      if (success) {
-        const newItems = items.filter((x) => x.id !== id);
-        setItems(newItems);
-        setIds(newItems.map((p) => p.id));
+    if (user?.id) {
+      // Authenticated user - use backend
+      try {
+        const success = await userDataService.removeFromCompare(user.id, id);
+        if (success) {
+          const newItems = items.filter((x) => x.id !== id);
+          setItems(newItems);
+          setIds(newItems.map((p) => p.id));
+        }
+      } catch (error) {
+        console.error("Error removing from compare:", error);
       }
-    } catch (error) {
-      console.error("Error removing from compare:", error);
+    } else {
+      // Guest user - use localStorage
+      const newItems = items.filter((x) => x.id !== id);
+      const newIds = newItems.map((p) => p.id);
+      setItems(newItems);
+      setIds(newIds);
+      localStorage.setItem("tk_guest_compare", JSON.stringify(newIds));
     }
   };
 
   const clear = async () => {
-    if (!user?.id) return;
-
-    try {
-      const success = await userDataService.clearCompareList(user.id);
-      if (success) {
-        setItems([]);
-        setIds([]);
+    if (user?.id) {
+      // Authenticated user - use backend
+      try {
+        const success = await userDataService.clearCompareList(user.id);
+        if (success) {
+          setItems([]);
+          setIds([]);
+        }
+      } catch (error) {
+        console.error("Error clearing compare list:", error);
       }
-    } catch (error) {
-      console.error("Error clearing compare list:", error);
+    } else {
+      // Guest user - use localStorage
+      setItems([]);
+      setIds([]);
+      localStorage.setItem("tk_guest_compare", JSON.stringify([]));
     }
   };
 

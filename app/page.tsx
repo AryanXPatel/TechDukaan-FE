@@ -101,7 +101,7 @@ export default function Page() {
               <div className="mt-10 grid grid-cols-2 gap-6 text-sm text-neutral-700 dark:text-neutral-300 sm:grid-cols-3">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
-                  40+ point testing
+                  Quality checked
                 </div>
                 <div className="flex items-center gap-2">
                   <Shield className="h-5 w-5" aria-hidden="true" />

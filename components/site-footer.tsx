@@ -148,7 +148,8 @@ export function SiteFooter() {
           <div>
             <h4 className="text-sm font-semibold text-foreground">Company</h4>
             <p className="mt-1 text-sm text-muted-foreground">
-              Learn more about our company and our mission.
+              We're pre-launching soon! Building the future of refurbished
+              laptop marketplace.
             </p>
           </div>
         </div>
@@ -157,11 +158,6 @@ export function SiteFooter() {
 
         <div className="flex flex-col items-start justify-between gap-3 text-sm text-muted-foreground sm:flex-row">
           <div>© {new Date().getFullYear()} TechDukaan</div>
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-1 text-muted-foreground">
-              Designed with <Sparkles className="h-3.5 w-3.5" />
-            </span>
-          </div>
         </div>
       </div>
     </footer>
